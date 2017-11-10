@@ -6,7 +6,7 @@
 - Are there better gems to help build as a command line tool
 - Add functionality to import and write to database
     - Mysql
-    - ProsgreSQL
+    - PostgreSQL
     - MongoDB
 - Needs a command name!!
 
@@ -22,4 +22,7 @@ When importing and writing direct to database:
 ```bash
 import -i /data/extract_aoo_ref.bcp -o /data/aoo_ref.csv
 ```
+
+ - batch (or working with zip)
+ - default name for initial location of file/folder
 

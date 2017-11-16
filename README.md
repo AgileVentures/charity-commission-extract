@@ -6,5 +6,11 @@ Work in progress project to convert the bcp data from http://data.charitycommiss
 To extract the data into CSV format run the following command:
 
 ```
-import.rb -i <path_to_file_to_import>
+import.rb -i <path_to_bcp_directory>
 ```
+
+```
+import.rb -i <path_to_bcp_directory> -o <path_to_output_directory>
+```
+
+Note: If no input or output paramters are provided the current working directory will be used.

@@ -3,15 +3,16 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'find'
 
 options = {}
 option_parser = OptionParser.new do |opts|
-  opts.on('-i INPUTFILE') do |input_file|
-    options[:input_file] = input_file
+  opts.on('-i INPUTFOLDER') do |input_folder|
+    options[:input_folder] = input_folder
   end
 
-  opts.on('-o OUTPUTFILE') do |output_file|
-    options[:output_file] = output_file
+  opts.on('-o OUTPUTFOLDER') do |output_folder|
+    options[:output_folder] = output_folder
   end
 end
 
@@ -57,31 +58,45 @@ def add_header_row(prepared_file, file_name)
   return prepared_file = header_rows[file_name.to_sym] + "\n" + prepared_file
 end
 
+# TODO: Need to add error checking to test if file name has a matching header row
+def process_file(file, options)
+  # check input file exists
+  if File.file? file
+    file_name = File.basename file
+    open_file = File.open file, 'rb'
+    prepared_file = prepare_file(open_file)
+    prepared_file = add_header_row(prepared_file, file_name.split('.')[0])
+    output_file = "#{file_name.split('.')[0]}.csv"
+    output_file = options[:output_folder] + '/' + output_file
+    output_file.gsub!('//', '/')
+    File.open(output_file, 'w') { |f| f.write(prepared_file) }
+    puts "Converted:  --> #{output_file}"
+  else
+    puts "ERROR: There was a problem reading '#{file}'."
+    exit 1
+  end
+end
+
 
 
 ################
 # Main Process #
 ################
 
-if options[:input_file]
-  # check input file exists
-  if File.file? options[:input_file]
-    file_name = File.basename options[:input_file]
-    file = File.open options[:input_file], 'rb'
-    prepared_file = prepare_file(file)
-    prepared_file = add_header_row(prepared_file, file_name.split('.')[0])
-    output_file = "#{file_name.split('.')[0]}.csv"
-    output_file = options[:output_file] if options[:output_file]
-    File.open(output_file, 'w') { |f| f.write(prepared_file) }
-    puts "#{options[:input_file]} converted to #{output_file}"
-    exit 0
-  else
-    puts "ERROR: File '#{options[:input_file]}' does not exists."
-    exit 1
-  end
+# get list of *.bcl files
+options[:input_folder] = './' unless options[:input_folder]
+options[:output_folder] = './' unless options[:output_folder]
+bcp_files = []
+Find.find(options[:input_folder]) do |path|
+  bcp_files << path if path =~ /.*\.bcp$/
+end
 
+if bcp_files.empty?
+  puts 'Warning: No bcp files to process in directory provided.'
+  exit 0
 else
-  puts 'ERROR: You must enter a valid file to import.'
-  puts 'usage: import.rb -i <path_to_file_to_import>'
-  exit 1
+  bcp_files.each do |file|
+    puts "Processing: #{file}"
+    process_file file, options
+  end
 end

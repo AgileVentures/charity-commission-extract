@@ -4,6 +4,7 @@
 - Build as a Gem (with command line implementation)
 - Add tests
 - Are there better gems to help build as a command line tool
+- describe the mechanism to import
 - Add functionality to import and write to database
     - Mysql
     - PostgreSQL

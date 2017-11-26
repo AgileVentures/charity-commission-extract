@@ -35,6 +35,8 @@ def prepare_file(file)
   input_file.chomp!('"')
   input_file.gsub!(",\"\n", ",\"\"\n")
   input_file.gsub!(/(\w)$/, '\1"')
+  input_file.gsub!(/\s$/, '"')
+  input_file.gsub!('"""', '""')
   input_file.gsub!('-.-', '"')
   input_file
 end
